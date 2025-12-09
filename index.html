@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <link type="text/css" rel="stylesheet" href="style.css"/>
+  </head>
+  <body>
+    <!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tienda de Música</title>
+    <!-- Vinculamos el CSS -->
+    <link rel="stylesheet" href="style.css">
+    <!-- Iconos de FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+
+    <!-- Encabezado -->
+    <header>
+        <div class="logo">
+            <i class="fa-solid fa-guitar"></i> Musicologia Store
+        </div>
+        <button id="btn-admin" class="btn-admin">
+            <i class="fa-solid fa-user-gear"></i> Área de Vendedor
+        </button>
+    </header>
+
+    <!-- FORMULARIO DE PUBLICACIÓN (Oculto al inicio) -->
+    <section id="seccion-admin" class="admin-container oculto">
+        <div class="form-wrapper">
+            <h2>Publicar Nuevo Accesorio</h2>
+            <form id="formulario-producto">
+                <input type="text" id="input-url" placeholder="URL de la imagen (ej: https://...)" required>
+                <input type="text" id="input-nombre" placeholder="Nombre del producto" required>
+                <input type="text" id="input-desc" placeholder="Descripción breve" required>
+                <input type="number" id="input-precio" placeholder="Precio ($)" required>
+                <button type="submit" class="btn-publicar">Publicar ahora</button>
+            </form>
+        </div>
+    </section>
+
+    <!-- CATÁLOGO DE PRODUCTOS -->
+    <main>
+        <h1>Accesorios Disponibles</h1>
+        <div id="contenedor-productos" class="grid-productos">
+            <!-- Aquí el JavaScript va a inyectar los productos -->
+        </div>
+    </main>
+
+    <!-- Vinculamos el JavaScript -->
+    <script src="script.js"></script>
+</body>
+</html>
+
+    <script type="module" src="script.js"></script>
+  </body>
+</html>
