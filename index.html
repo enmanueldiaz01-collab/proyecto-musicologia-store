@@ -4,153 +4,201 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MusicologiaStore - Tienda Oficial</title>
-    <!-- Iconos -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
-    <style>
-        /* --- ESTILOS CSS --- */
-        body { font-family: 'Segoe UI', sans-serif; background-color: #1a1a1a; color: #fff; margin: 0; padding: 0; }
-        header { background-color: #000; padding: 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 3px solid #e91e63; }
-        .logo { font-size: 24px; font-weight: bold; color: #e91e63; }
-        
-        /* Botones de Admin */
-        #btn-admin-acceso, #btn-cerrar-sesion { background: #333; color: white; border: 1px solid #555; padding: 10px 20px; cursor: pointer; border-radius: 5px; transition: 0.3s; }
-        #btn-admin-acceso:hover { background: #e91e63; }
-
-        /* Panel Admin */
-        #seccion-admin { padding: 20px; background-color: #252525; border-bottom: 1px solid #444; }
-        .oculto { display: none !important; }
-
-        .form-wrapper { max-width: 500px; margin: 0 auto; }
-        form { display: flex; flex-direction: column; gap: 10px; }
-        input { padding: 12px; border-radius: 5px; border: none; background: #333; color: white; }
-        .btn-publicar { background-color: #e91e63; color: white; padding: 12px; border: none; cursor: pointer; font-weight: bold; border-radius: 5px; }
-
-        /* Grid Productos */
-        main { padding: 20px; max-width: 1200px; margin: 0 auto; }
-        h1 { text-align: center; margin-bottom: 30px; }
-        .grid-productos { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 20px; }
-
-        /* Tarjetas */
-        .card { background-color: #2a2a2a; border-radius: 10px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.5); display: flex; flex-direction: column; }
-        .card img { width: 100%; height: 220px; object-fit: cover; }
-        .info { padding: 15px; display: flex; flex-direction: column; flex-grow: 1; }
-        .precio { font-size: 1.3em; font-weight: bold; color: #4caf50; margin-bottom: 15px; }
-        .btn-whatsapp { background-color: #25D366; color: white; text-decoration: none; padding: 10px; text-align: center; border-radius: 5px; font-weight: bold; margin-top: auto; }
-        .btn-eliminar { background: #ff5252; color: white; border: none; padding: 8px; margin-top: 10px; border-radius: 5px; cursor: pointer; }
-    </style>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
     <header>
         <div class="logo"><i class="fa-solid fa-bullhorn"></i> MusicologiaStore</div>
-        <!-- BOTÓN DE ACCESO -->
-        <button id="btn-admin-acceso" onclick="accesoAdmin()"><i class="fa-solid fa-lock"></i> Área de Vendedor</button>
-        <button id="btn-cerrar-sesion" class="oculto" onclick="cerrarSesion()">Cerrar Sesión</button>
+        <div>
+            <button id="btn-admin-acceso" onclick="accesoAdmin()"><i class="fa-solid fa-lock"></i> Área de Vendedor</button>
+            <button id="btn-cerrar-sesion" class="oculto" onclick="cerrarSesion()">Cerrar Sesión</button>
+        </div>
     </header>
 
-    <!-- PANEL DE ADMINISTRACIÓN (Protegido) -->
+    <!-- Panel para publicar (Solo tú lo verás al poner la clave) -->
     <section id="seccion-admin" class="oculto">
         <div class="form-wrapper">
-            <h2 style="text-align: center;">Publicar Nuevo Accesorio</h2>
-            <form id="formulario-producto" onsubmit="publicarProducto(event)">
-                <input type="text" id="input-url" placeholder="URL de imagen (ej: https://imagen.jpg)" required>
+            <h2>Publicar Nuevo Producto</h2>
+            <form id="formulario-producto">
+                <input type="text" id="input-url" placeholder="URL de la imagen (ej: https://imgur.com/foto.jpg)" required>
                 <input type="text" id="input-nombre" placeholder="Nombre del producto" required>
                 <input type="text" id="input-desc" placeholder="Descripción breve" required>
-                <input type="number" id="input-precio" placeholder="Precio ($)" required>
-                <button type="submit" class="btn-publicar">Publicar ahora</button>
+                <input type="number" id="input-precio" placeholder="Precio en $" required>
+                <button type="submit" class="btn-publicar">Publicar Globalmente</button>
             </form>
         </div>
     </section>
 
     <main>
         <h1>Catálogo Disponible</h1>
-        <div id="contenedor-productos" class="grid-productos"></div>
+        <div id="contenedor-productos" class="grid-productos">
+            <!-- Los productos cargarán aquí desde Firebase -->
+        </div>
     </main>
 
-    <script>
-        // --- CONFIGURACIÓN ---
-        const TELEFONO = "18292693105"; 
-        const CLAVE_CORRECTA = "05050801"; // <--- CAMBIA TU CLAVE AQUÍ
-
-        let inventario = JSON.parse(localStorage.getItem('mis_accesorios_v2')) || [];
-        let esAdmin = false;
-
-        // --- FUNCIÓN DE ACCESO ---
-        function accesoAdmin() {
-            const pass = prompt("Introduce la clave para publicar:");
-            if (pass === CLAVE_CORRECTA) {
-                esAdmin = true;
-                document.getElementById('seccion-admin').classList.remove('oculto');
-                document.getElementById('btn-admin-acceso').classList.add('oculto');
-                document.getElementById('btn-cerrar-sesion').classList.remove('oculto');
-                renderizarProductos();
-                alert("Bienvenido, Administrador.");
-            } else {
-                alert("Clave incorrecta.");
-            }
-        }
-
-        function cerrarSesion() {
-            esAdmin = false;
-            document.getElementById('seccion-admin').classList.add('oculto');
-            document.getElementById('btn-admin-acceso').classList.remove('oculto');
-            document.getElementById('btn-cerrar-sesion').classList.add('oculto');
-            renderizarProductos();
-        }
-
-        function publicarProducto(e) {
-            e.preventDefault();
-            const nuevo = {
-                id: Date.now(),
-                img: document.getElementById('input-url').value,
-                nombre: document.getElementById('input-nombre').value,
-                desc: document.getElementById('input-desc').value,
-                precio: document.getElementById('input-precio').value
-            };
-            inventario.push(nuevo);
-            localStorage.setItem('mis_accesorios_v2', JSON.stringify(inventario));
-            document.getElementById('formulario-producto').reset();
-            renderizarProductos();
-            alert("¡Publicado!");
-        }
-
-        function renderizarProductos() {
-            const contenedor = document.getElementById('contenedor-productos');
-            contenedor.innerHTML = "";
-            if (inventario.length === 0) {
-                contenedor.innerHTML = "<p style='text-align:center; width:100%'>No hay productos.</p>";
-                return;
-            }
-            inventario.forEach(prod => {
-                const link = `https://wa.me/${TELEFONO}?text=Hola, quiero: ${prod.nombre}`;
-                const div = document.createElement('div');
-                div.className = 'card';
-                div.innerHTML = `
-                    <img src="${prod.img}" onerror="this.src='https://via.placeholder.com/300'">
-                    <div class="info">
-                        <h3>${prod.nombre}</h3>
-                        <p>${prod.desc}</p>
-                        <div class="precio">$${prod.precio}</div>
-                        <a href="${link}" target="_blank" class="btn-whatsapp">Comprar WhatsApp</a>
-                        ${esAdmin ? `<button onclick="eliminar(${prod.id})" class="btn-eliminar">Eliminar</button>` : ''}
-                    </div>
-                `;
-                contenedor.appendChild(div);
-            });
-        }
-
-        function eliminar(id) {
-            if(confirm("¿Borrar?")) {
-                inventario = inventario.filter(p => p.id !== id);
-                localStorage.setItem('mis_accesorios_v2', JSON.stringify(inventario));
-                renderizarProductos();
-            }
-        }
-
-        // Cargar al inicio
-        renderizarProductos();
-    </script>
+    <!-- Importamos el script como módulo para Firebase -->
+    <script type="module" src="script.js"></script>
 </body>
 </html>
+```
 
+### 2. Archivo `style.css`
+Crea este archivo y pega esto:
+
+```css
+body { font-family: 'Segoe UI', sans-serif; background-color: #1a1a1a; color: #fff; margin: 0; padding: 0; }
+header { background-color: #000; padding: 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 3px solid #e91e63; }
+.logo { font-size: 24px; font-weight: bold; color: #e91e63; }
+
+#btn-admin-acceso, #btn-cerrar-sesion { background: #333; color: white; border: 1px solid #555; padding: 10px 20px; cursor: pointer; border-radius: 5px; }
+#btn-admin-acceso:hover { background: #e91e63; }
+
+.oculto { display: none !important; }
+
+#seccion-admin { padding: 20px; background-color: #252525; border-bottom: 1px solid #444; }
+.form-wrapper { max-width: 500px; margin: 0 auto; }
+form { display: flex; flex-direction: column; gap: 10px; }
+input { padding: 12px; border-radius: 5px; border: none; background: #333; color: white; }
+.btn-publicar { background-color: #e91e63; color: white; padding: 12px; border: none; cursor: pointer; font-weight: bold; border-radius: 5px; }
+
+main { padding: 20px; max-width: 1200px; margin: 0 auto; }
+h1 { text-align: center; margin-bottom: 30px; }
+.grid-productos { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 20px; }
+
+.card { background-color: #2a2a2a; border-radius: 10px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.5); display: flex; flex-direction: column; transition: 0.3s; }
+.card img { width: 100%; height: 220px; object-fit: cover; }
+.info { padding: 15px; display: flex; flex-direction: column; flex-grow: 1; }
+.precio { font-size: 1.3em; font-weight: bold; color: #4caf50; margin-bottom: 15px; }
+.btn-whatsapp { background-color: #25D366; color: white; text-decoration: none; padding: 10px; text-align: center; border-radius: 5px; font-weight: bold; margin-top: auto; }
+.btn-eliminar { background: #ff5252; color: white; border: none; padding: 8px; margin-top: 10px; border-radius: 5px; cursor: pointer; }
+```
+
+### 3. Archivo `script.js`
+Crea este archivo y pega esto (Ya tiene tus datos de MusicologiaStore):
+
+```javascript
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import { getDatabase, ref, push, onValue, remove } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+
+// TU CONFIGURACIÓN REAL DE FIREBASE
+const firebaseConfig = {
+  apiKey: "AIzaSyAen72yZmcxLW_PoqkOsuG0RTgBGF7O61g",
+  authDomain: "musicologiastore.firebaseapp.com",
+  databaseURL: "https://musicologiastore-default-rtdb.firebaseio.com",
+  projectId: "musicologiastore",
+  storageBucket: "musicologiastore.firebasestorage.app",
+  messagingSenderId: "43587604396",
+  appId: "1:43587604396:web:4da021dad824c3a2503409",
+  measurementId: "G-D2SWD6KZF9"
+};
+
+// Inicializar Firebase
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
+const productosRef = ref(db, 'productos');
+
+const TELEFONO = "18292693105";
+const CLAVE_ADMIN = "05050801"; // <--- Cambia esta clave si quieres otra
+let esAdmin = false;
+
+// FUNCIONES GLOBALES PARA EL HTML
+window.accesoAdmin = function() {
+    const pass = prompt("Introduce la clave de vendedor:");
+    if (pass === CLAVE_ADMIN) {
+        esAdmin = true;
+        document.getElementById('seccion-admin').classList.remove('oculto');
+        document.getElementById('btn-admin-acceso').classList.add('oculto');
+        document.getElementById('btn-cerrar-sesion').classList.remove('oculto');
+        renderizar(); // Volver a dibujar para mostrar botones de borrar
+    } else {
+        alert("Clave incorrecta. Solo el dueño puede publicar.");
+    }
+};
+
+window.cerrarSesion = function() {
+    esAdmin = false;
+    document.getElementById('seccion-admin').classList.add('oculto');
+    document.getElementById('btn-admin-acceso').classList.remove('oculto');
+    document.getElementById('btn-cerrar-sesion').classList.add('oculto');
+    renderizar();
+};
+
+// PUBLICAR PRODUCTO
+const form = document.getElementById('formulario-producto');
+form.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const nuevoProducto = {
+        img: document.getElementById('input-url').value,
+        nombre: document.getElementById('input-nombre').value,
+        desc: document.getElementById('input-desc').value,
+        precio: document.getElementById('input-precio').value
+    };
+    
+    push(productosRef, nuevoProducto);
+    form.reset();
+    alert("¡Producto publicado y guardado en la nube!");
+});
+
+// RENDERIZAR (LEER DATOS EN TIEMPO REAL)
+function renderizar() {
+    onValue(productosRef, (snapshot) => {
+        const contenedor = document.getElementById('contenedor-productos');
+        contenedor.innerHTML = "";
+        const data = snapshot.val();
+        
+        if (!data) {
+            contenedor.innerHTML = "<p style='text-align:center; width:100%'>No hay productos disponibles.</p>";
+            return;
+        }
+
+        Object.keys(data).forEach(id => {
+            const prod = data[id];
+            const mensajeWa = encodeURIComponent(`Hola MusicologiaStore, me interesa: ${prod.nombre} ($${prod.precio})`);
+            const linkWa = `https://wa.me/${TELEFONO}?text=${mensajeWa}`;
+
+            const div = document.createElement('div');
+            div.className = 'card';
+            div.innerHTML = `
+                <img src="${prod.img}" onerror="this.src='https://via.placeholder.com/300?text=Sin+Imagen'">
+                <div class="info">
+                    <h3>${prod.nombre}</h3>
+                    <p>${prod.desc}</p>
+                    <div class="precio">$${prod.precio}</div>
+                    <a href="${linkWa}" target="_blank" class="btn-whatsapp"><i class="fa-brands fa-whatsapp"></i> Comprar</a>
+                    ${esAdmin ? `<button onclick="eliminarProducto('${id}')" class="btn-eliminar">Eliminar</button>` : ''}
+                </div>
+            `;
+            contenedor.appendChild(div);
+        });
+    });
+}
+
+// ELIMINAR PRODUCTO
+window.eliminarProducto = function(id) {
+    if(confirm("¿Borrar este producto para siempre?")) {
+        const itemRef = ref(db, `productos/${id}`);
+        remove(itemRef);
+    }
+};
+
+// Iniciar carga
+renderizar();
+```
+
+---
+
+### Paso Final Muy Importante (Reglas de Firebase)
+Para que el código pueda escribir en la base de datos, debes asegurarte de que la base de datos permita lectura y escritura:
+
+1. Entra a tu [Firebase Console](https://console.firebase.google.com/).
+2. Ve a **Realtime Database** > pestaña **Rules (Reglas)**.
+3. Asegúrate de que digan esto (Copia y pega esto allí si es necesario):
+```json
+{
+  "rules": {
+    ".read": true,
+    ".write": true
+  }
+}
