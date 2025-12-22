@@ -7,29 +7,24 @@
     <!-- Iconos -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
-    <!-- ESTILOS CSS INCORPORADOS -->
     <style>
+        /* --- ESTILOS CSS --- */
         body { font-family: 'Segoe UI', sans-serif; background-color: #1a1a1a; color: #fff; margin: 0; padding: 0; }
-        
-        /* Header */
         header { background-color: #000; padding: 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 3px solid #e91e63; }
         .logo { font-size: 24px; font-weight: bold; color: #e91e63; }
         
-        /* Botón del Admin */
-        #btn-admin { background: #333; color: white; border: 1px solid #555; padding: 10px 20px; cursor: pointer; border-radius: 5px; font-size: 1rem; transition: 0.3s; }
-        #btn-admin:hover { background: #555; }
+        /* Botones de Admin */
+        #btn-admin-acceso, #btn-cerrar-sesion { background: #333; color: white; border: 1px solid #555; padding: 10px 20px; cursor: pointer; border-radius: 5px; transition: 0.3s; }
+        #btn-admin-acceso:hover { background: #e91e63; }
 
         /* Panel Admin */
-        #seccion-admin { padding: 20px; background-color: #252525; border-bottom: 1px solid #444; transition: all 0.3s ease; }
-        
-        /* CLASE PARA OCULTAR (Importante) */
+        #seccion-admin { padding: 20px; background-color: #252525; border-bottom: 1px solid #444; }
         .oculto { display: none !important; }
 
         .form-wrapper { max-width: 500px; margin: 0 auto; }
         form { display: flex; flex-direction: column; gap: 10px; }
-        input { padding: 10px; border-radius: 5px; border: none; background: #333; color: white; }
-        .btn-publicar { background-color: #e91e63; color: white; padding: 10px; border: none; cursor: pointer; font-weight: bold; border-radius: 5px; margin-top: 10px; }
-        .btn-publicar:hover { background-color: #c2185b; }
+        input { padding: 12px; border-radius: 5px; border: none; background: #333; color: white; }
+        .btn-publicar { background-color: #e91e63; color: white; padding: 12px; border: none; cursor: pointer; font-weight: bold; border-radius: 5px; }
 
         /* Grid Productos */
         main { padding: 20px; max-width: 1200px; margin: 0 auto; }
@@ -37,31 +32,29 @@
         .grid-productos { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 20px; }
 
         /* Tarjetas */
-        .card { background-color: #2a2a2a; border-radius: 10px; overflow: hidden; box-shadow: 0 4px 8px rgba(0,0,0,0.3); display: flex; flex-direction: column; transition: transform 0.2s; }
-        .card:hover { transform: translateY(-5px); }
-        .card img { width: 100%; height: 200px; object-fit: cover; }
+        .card { background-color: #2a2a2a; border-radius: 10px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.5); display: flex; flex-direction: column; }
+        .card img { width: 100%; height: 220px; object-fit: cover; }
         .info { padding: 15px; display: flex; flex-direction: column; flex-grow: 1; }
-        .info h3 { margin: 0 0 10px 0; color: #e91e63; }
-        .precio { font-size: 1.2em; font-weight: bold; color: #4caf50; margin-bottom: 10px; }
-        .btn-whatsapp { background-color: #25D366; color: white; text-decoration: none; padding: 10px; text-align: center; border-radius: 5px; font-weight: bold; margin-top: auto; display: block; }
-        .btn-whatsapp:hover { background-color: #1ebc59; }
-        .btn-eliminar { background: transparent; border: none; color: #ff5252; margin-top: 10px; cursor: pointer; width: 100%; text-align: right; }
+        .precio { font-size: 1.3em; font-weight: bold; color: #4caf50; margin-bottom: 15px; }
+        .btn-whatsapp { background-color: #25D366; color: white; text-decoration: none; padding: 10px; text-align: center; border-radius: 5px; font-weight: bold; margin-top: auto; }
+        .btn-eliminar { background: #ff5252; color: white; border: none; padding: 8px; margin-top: 10px; border-radius: 5px; cursor: pointer; }
     </style>
 </head>
 <body>
 
     <header>
         <div class="logo"><i class="fa-solid fa-bullhorn"></i> MusicologiaStore</div>
-        <!-- BOTÓN QUE ABRE EL PANEL -->
-        <button id="btn-admin" onclick="alternarPanel()"><i class="fa-solid fa-user-gear"></i> Área de Vendedor</button>
+        <!-- BOTÓN DE ACCESO -->
+        <button id="btn-admin-acceso" onclick="accesoAdmin()"><i class="fa-solid fa-lock"></i> Área de Vendedor</button>
+        <button id="btn-cerrar-sesion" class="oculto" onclick="cerrarSesion()">Cerrar Sesión</button>
     </header>
 
-    <!-- PANEL DE ADMINISTRACIÓN (Empieza oculto) -->
+    <!-- PANEL DE ADMINISTRACIÓN (Protegido) -->
     <section id="seccion-admin" class="oculto">
         <div class="form-wrapper">
             <h2 style="text-align: center;">Publicar Nuevo Accesorio</h2>
             <form id="formulario-producto" onsubmit="publicarProducto(event)">
-                <input type="text" id="input-url" placeholder="Pegar URL de imagen aquí..." required>
+                <input type="text" id="input-url" placeholder="URL de imagen (ej: https://imagen.jpg)" required>
                 <input type="text" id="input-nombre" placeholder="Nombre del producto" required>
                 <input type="text" id="input-desc" placeholder="Descripción breve" required>
                 <input type="number" id="input-precio" placeholder="Precio ($)" required>
@@ -72,40 +65,42 @@
 
     <main>
         <h1>Catálogo Disponible</h1>
-        <div id="contenedor-productos" class="grid-productos">
-            <!-- Productos aquí -->
-        </div>
+        <div id="contenedor-productos" class="grid-productos"></div>
     </main>
 
-    <!-- JAVASCRIPT INCORPORADO (Directo en el HTML para evitar errores) -->
     <script>
         // --- CONFIGURACIÓN ---
-        const TELEFONO = "18292693105"; // Pon tu número aquí (sin el +)
+        const TELEFONO = "18292693105"; 
+        const CLAVE_CORRECTA = "1234"; // <--- CAMBIA TU CLAVE AQUÍ
 
-        // --- VARIABLES ---
         let inventario = JSON.parse(localStorage.getItem('mis_accesorios_v2')) || [];
-        const contenedor = document.getElementById('contenedor-productos');
+        let esAdmin = false;
 
-        // --- AL CARGAR LA PÁGINA ---
-        window.onload = function() {
-            renderizarProductos();
-        };
-
-        // --- FUNCIÓN 1: ABRIR/CERRAR PANEL ---
-        function alternarPanel() {
-            const panel = document.getElementById('seccion-admin');
-            if (panel.style.display === "none" || panel.classList.contains('oculto')) {
-                panel.classList.remove('oculto');
-                panel.style.display = "block";
+        // --- FUNCIÓN DE ACCESO ---
+        function accesoAdmin() {
+            const pass = prompt("Introduce la clave para publicar:");
+            if (pass === CLAVE_CORRECTA) {
+                esAdmin = true;
+                document.getElementById('seccion-admin').classList.remove('oculto');
+                document.getElementById('btn-admin-acceso').classList.add('oculto');
+                document.getElementById('btn-cerrar-sesion').classList.remove('oculto');
+                renderizarProductos();
+                alert("Bienvenido, Administrador.");
             } else {
-                panel.style.display = "none";
+                alert("Clave incorrecta.");
             }
         }
 
-        // --- FUNCIÓN 2: PUBLICAR ---
+        function cerrarSesion() {
+            esAdmin = false;
+            document.getElementById('seccion-admin').classList.add('oculto');
+            document.getElementById('btn-admin-acceso').classList.remove('oculto');
+            document.getElementById('btn-cerrar-sesion').classList.add('oculto');
+            renderizarProductos();
+        }
+
         function publicarProducto(e) {
             e.preventDefault();
-            
             const nuevo = {
                 id: Date.now(),
                 img: document.getElementById('input-url').value,
@@ -113,55 +108,48 @@
                 desc: document.getElementById('input-desc').value,
                 precio: document.getElementById('input-precio').value
             };
-
             inventario.push(nuevo);
             localStorage.setItem('mis_accesorios_v2', JSON.stringify(inventario));
-            
             document.getElementById('formulario-producto').reset();
             renderizarProductos();
             alert("¡Publicado!");
         }
 
-        // --- FUNCIÓN 3: MOSTRAR EN PANTALLA ---
         function renderizarProductos() {
+            const contenedor = document.getElementById('contenedor-productos');
             contenedor.innerHTML = "";
-
             if (inventario.length === 0) {
-                contenedor.innerHTML = "<p style='text-align:center; width:100%'>No hay productos aún.</p>";
+                contenedor.innerHTML = "<p style='text-align:center; width:100%'>No hay productos.</p>";
                 return;
             }
-
             inventario.forEach(prod => {
-                const mensaje = `Hola, me interesa: ${prod.nombre} - $${prod.precio}`;
-                const link = `https://wa.me/${TELEFONO}?text=${encodeURIComponent(mensaje)}`;
-
+                const link = `https://wa.me/${TELEFONO}?text=Hola, quiero: ${prod.nombre}`;
                 const div = document.createElement('div');
                 div.className = 'card';
                 div.innerHTML = `
-                    <img src="${prod.img}" onerror="this.src='https://via.placeholder.com/300?text=Sin+Imagen'">
+                    <img src="${prod.img}" onerror="this.src='https://via.placeholder.com/300'">
                     <div class="info">
                         <h3>${prod.nombre}</h3>
                         <p>${prod.desc}</p>
                         <div class="precio">$${prod.precio}</div>
-                        <a href="${link}" target="_blank" class="btn-whatsapp">Comprar en WhatsApp</a>
-                        <button onclick="eliminar(${prod.id})" class="btn-eliminar">Eliminar</button>
+                        <a href="${link}" target="_blank" class="btn-whatsapp">Comprar WhatsApp</a>
+                        ${esAdmin ? `<button onclick="eliminar(${prod.id})" class="btn-eliminar">Eliminar</button>` : ''}
                     </div>
                 `;
                 contenedor.appendChild(div);
             });
         }
 
-        // --- FUNCIÓN 4: ELIMINAR ---
         function eliminar(id) {
-            if(confirm("¿Borrar producto?")) {
+            if(confirm("¿Borrar?")) {
                 inventario = inventario.filter(p => p.id !== id);
                 localStorage.setItem('mis_accesorios_v2', JSON.stringify(inventario));
                 renderizarProductos();
             }
         }
+
+        // Cargar al inicio
+        renderizarProductos();
     </script>
 </body>
 </html>
-
-
-
